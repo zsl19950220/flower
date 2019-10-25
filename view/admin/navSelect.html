@@ -1,0 +1,132 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>导航展示</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+</head>
+<style>
+    table input {
+        border: none;
+        outline: none;
+    }
+</style>
+<body>
+<!--12栅格-->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 col-lg-offset-2">
+            <!--路径导航-->
+            <ol class="breadcrumb">
+                <li>首页</li>
+                <li class="active">导航展示</li>
+            </ol>
+
+            <!--表格的开始-->
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>导航名称</th>
+                    <th>导航英文名称</th>
+                    <th>导航排序</th>
+                    <th>导航模板</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+
+
+                <?php
+                foreach ($res as $key=>$value){
+                ?>
+                <tr id="<?php  echo $value['id']?>">
+                    <td><input type="text" name="nname" data-value="<?php  echo $value['nname']?>"
+                               value="<?php  echo $value['nname']?>"></td>
+                    <td><input type="text" name="ename" data-value="<?php  echo $value['ename']?>"
+                               value="<?php  echo $value['ename']?>"></td>
+                    <td><input type="text" name="nsort" data-value="<?php  echo $value['nsort']?>"
+                               value="<?php  echo $value['nsort']?>"></td>
+                    <td><input type="text" name="ntpl" data-value="<?php  echo $value['ntpl']?>"
+                               value="<?php  echo $value['ntpl']?>"></td>
+
+                    <td>
+                        <button class="btn btn-danger">删除</button>
+                    </td>
+
+                </tr>
+
+
+                <?php
+                }
+                ?>
+
+
+                </tbody>
+            </table>
+
+
+        </div>
+    </div>
+</div>
+<!--12栅格结束-->
+
+</body>
+</html>
+<script src="../static/js/jquery-3.4.1.min.js"></script>
+<script>
+    //删除
+    $('tbody').on('click', '.btn-danger', function () {
+        let qs = $(this).parents('tr').attr('id');
+
+        $.ajax({
+            type: 'POST',
+            url: 'navDelete.php',
+            dataType: 'json',
+            data: {
+                'id': qs,
+            },
+            success: function (res) {
+                if (res.code === 200) {
+                    alert(res.msg);
+                    $('#' + qs).remove();//获取到tr，然后删除了
+                } else {
+                    alert(res.msg);
+                }
+
+            }
+        })
+
+
+    });
+
+    //修改
+    $('tbody').on('blur', 'input', function () {
+        let id = $(this).parents('tr').attr('id');
+        let value = this.value;
+        let type = this.name;
+        let oldvalue = this.getAttribute('data-value');
+
+        value.length && oldvalue != value && $.ajax({
+            type: 'POST',
+            url: 'navUpdate.php',
+            dataType: 'json',
+            context: this,
+            data: {id, value, type},
+            success: function (res) {
+                if (res.code == 200) {
+                    alert(res.msg)
+                } else {
+                    alert(res.msg);
+                    this.value = oldvalue; //当修改失败时，会返回之前保存的数据
+                }
+            }
+        });
+        value.length || (this.value = oldvalue);//当修改数据为空时候就会返回之前的数据，不发送请求
+
+
+    })
+
+</script>

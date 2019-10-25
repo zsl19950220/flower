@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+<ol class="breadcrumb">
+    <li>首页</li>
+    <li style="color: #00A2E9">数据修改</li>
+</ol>
+<form>
+    <div class="form-group">
+        <label for="exampleInputEmail1">商品所属分类</label>
+        <select class="form-control" name="cid">
+            <?php require '../lib/db.php';
+                $sql = "select * from category";
+                $result = $mysql->query($sql)->fetch_all(MYSQLI_ASSOC);
+               foreach($result as $key){
+                if($key['id']===$data['cid']){
+            ?>
+            <option value="<?php echo $data['cid']; ?>"<?php echo $key['id']==$data['cid']? "selected":""?>><?php echo $key['cname']?></option>
+            <?php }else{ ?>
+            <option value="<?php echo $key['id']; ?>"><?php echo $key['cname']; ?></option>
+            <?php
+                }
+            }?>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="exampleInputEmail1">商品名称</label>
+        <input type="text" name="gname" class="form-control" id="exampleInputEmail1"
+               placeholder="请输入商品名称" value="<?php echo $data['gname']?>">
+    </div>
+    <div class="form-group">
+        <label for="exampleInputPassword1">市场价格</label>
+        <input type="number" name="gmprice" class="form-control" id="exampleInputPassword1"
+               placeholder="请输入市场价格" value="<?php echo $data['gmprice']?>">
+    </div>
+    <div class="form-group">
+        <label for="exampleInputEmail1">零售价</label>
+        <input type="number" name="gsale" class="form-control" id="exampleInputEmail12" placeholder="请输入零售价" value="<?php echo $data['gsale']?>">
+    </div>
+    <div class="form-group">
+        <label for="exampleInputPassword3">库存</label>
+        <input type="number" name="gstock" class="form-control" id="exampleInputPassword3"
+               placeholder="请输入库存" value="<?php echo $data['gstock']?>">
+    </div>
+    <div class="form-group">
+        <label for="exampleInputPassword3">商品详情介绍</label>
+        <textarea name="gdetail"class="form-control"id="exampleInputPassword4"><?php echo $data['gdetail']?></textarea>
+    </div>
+    <div class="form-group">
+        <label for="exampleInputPassword3">商品缩略图 <span>比例:1:1 最佳尺寸200*200</span></label>
+        <input type="file"accept="image/*" class="form-control" id="exampleInputPassword5"
+               placeholder="上传商品缩略图">
+    </div>
+    <div class="form-group">
+        <input type="hidden" name="gthumb" value="<?php echo $data['gthumb']?>">
+        <label for="exampleInputPassword3" style="visibility: hidden">缩略图</label>
+        <img  style="width:100%" name="gthumb" src="<?php echo $data['gthumb']; ?>">
+    </div>
+    <div class="form-group">
+        <input type="hidden" name="gbanner" value="<?php echo $data['gbanner']?>">
+        <label for="exampleInputPassword3">商品轮播图</label>
+        <input type="file" multiple class="form-control" id="exampleInputPassword6"
+               placeholder="上传商品轮播图">
+    </div>
+    <div class="form-group" id="gbanner" style="width: 200px">
+        <?php foreach(explode(',',$data['gbanner']) as $key=>$val){ ?>
+        <div class="multipleboxes" ><img  style="width:100%" name="gbanner" src="<?php echo $val; ?>"></div>
+        <?php } ?><input type="hidden">
+    </div>
+    <button type="submit"class="btn btn-default">点击更新</button>
+</form>
+</body>
+<script>
+    // 单图插入
+    $('input[id=exampleInputPassword5]').on('change',function (e) {
+        let file = this.files[0];
+        $('#gthumb').attr('src',URL.createObjectURL(file));
+        let formdata = new FormData();
+        formdata.append('file',file);
+        let promise = new Promise(function (resolve,reject) {
+            // $('img[name=gthumb]').remove();
+            $.ajax({
+                type:'POST',
+                url: 'upload.php',
+                data:formdata,
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                success:function (res) {
+                    console.log(res);
+                    if (res.code === 200){
+                        alert(res.msg);
+                        resolve(res);
+
+                    } else{
+                        reject(res.msg);
+                        alert(res.msg);
+                    }
+                }
+            })
+        });
+        promise.then(function (res) {
+            $("#gthumb").attr('src',res.src);
+            $('input[name=gthumb]').val(res.src);
+        })
+    });
+    //单图插入结束
+    //多图插入
+    $('input[id=exampleInputPassword6]').on('change',function () {
+        let file = this.files;
+        for (let i=0;i<file.length;i++){
+            let formdata = new FormData();
+            formdata.append('file',file[i]);
+            let promise =  new Promise(function (resolve, reject) {
+                $("img").remove().val("");
+                $.ajax({
+                    type:'POST',
+                    url: 'upload.php',
+                    data:formdata,
+                    dataType: 'json',
+                    processData: false,
+                    contentType: false,
+                    success:function (res) {
+                        if (res.code === 200){
+                            resolve(res)
+                        } else{
+                            console.log(res.msg);
+                            reject(res.msg)
+                        }
+                    }
+                })
+            });
+            let bannerInput = $('input[name=gbanner]');
+            bannerInput[0].value='';
+            promise.then(function (res) {
+                let src = res.src;
+                $("<img>").appendTo('#gbanner').attr('src',src).css('width',200);
+                bannerInput.val((index,value)=>value+src+',');
+            })
+        }
+    });
+    //多图插入结束
+    //提交部分开始
+        $('form').on('submit',function (e) {
+            e.preventDefault();
+            let arr = $(this).serialize();
+            let qs = location.search.slice(5);
+             arr+='&gid='+qs;
+            $.ajax({
+                url:'goodsmodify.php',
+                type:'POST',
+                data:arr,
+                dataType:'json',
+                success:function (res) {
+                 if (res.code==200){
+                     alert(res.msg);
+                 } else {
+                     alert(res.msg);
+                 }
+                }
+            })
+        })
+
+</script>
+</html>

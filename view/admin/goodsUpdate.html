@@ -1,0 +1,218 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>商品修改</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+</head>
+<body>
+<!--12栅格-->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 col-lg-offset-2">
+            <!--路径导航-->
+            <ol class="breadcrumb">
+                <li>首页</li>
+                <li class="active">商品修改</li>
+            </ol>
+
+
+            <!--表单的开始-->
+
+            <div class="panel panel-info" id="inputs">
+                <div class="panel-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="exampleInputEmail11">商品所选分类</label>
+                            <select class="form-control" name="cid" value="<?php echo $category['cname'] ?>"
+                                    id="exampleInputEmail11">
+                                <?php
+                               foreach ($category as $value){
+                                ?>
+                                <option
+                                <?php echo $res['cid']==$value['id']? 'selected' : '' ?>>
+                                <?php echo $value['cname'] ?>
+                                </option>
+
+
+                                <?php
+                                }
+                                ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">商品名称</label>
+                            <input type="text" name="gname" value="<?php echo $res['gname'] ?>" class="form-control"
+                                   id="exampleInputEmail1"
+                                   placeholder="商品名称">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail2">市场价</label>
+                            <input type="number" name="mprice" value="<?php echo $res['mprice'] ?>" class="form-control"
+                                   id="exampleInputEmail2"
+                                   placeholder="市场价">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail3">零售价</label>
+                            <input type="number" name="sprice" value="<?php echo $res['sprice'] ?>" class="form-control"
+                                   id="exampleInputEmail3"
+                                   placeholder="零售价">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail4">库存</label>
+                            <input type="number" name="stock" value="<?php echo $res['stock'] ?>" class="form-control"
+                                   id="exampleInputEmail4"
+                                   placeholder="库存">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail5">商品详情</label>
+                            <textarea type="text" name="detail" data-value="<?php echo $res['detail'] ?>"
+                                      class="form-control" id="exampleInputEmail5"
+                                      placeholder="商品详情"><?php echo $res['detail'] ?></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="exampleInputEmail6">商品缩略图</label>
+                            <input type="file" accept="image/*" class="form-control"
+                                   id="exampleInputEmail6"
+                                   placeholder="商品缩略图">
+                        </div>
+                        <!--存放缩放图的盒子-->
+                        <div class="form-group">
+                            <input type="hidden" name="gthumb">
+                            <label for="exampleInputEmail6" style="visibility: hidden"></label>
+                            <img id="gthumb" style="width: 200px" src="<?php echo $res['gthumb'] ?>" alt="">
+
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="exampleInputEmail7">商品轮播图 <span
+                                    class="span-font">比例:2:1,最佳尺寸:1024*532</span></label>
+                            <input type="file" multiple accept="image/*" class="form-control" id="exampleInputEmail7"
+                                   placeholder="商品轮播图">
+                        </div>
+
+                        <!--轮播图存放的盒子-->
+                        <div class="form-group" id="banner">
+                            <input type="hidden" name="banner" value="">
+                            <label for="exampleInputEmail7" style="visibility: hidden"></label>
+                            <img src="" alt="">
+
+                        </div>
+
+                        <!--修改时轮播图所做的操作-->
+                        <?php
+                        foreach(explode(',',$res['banner']) as $value){ ?>
+                        <img style="width: 100px;" name="banner" src="<?php echo $value ?>" alt="">
+
+                        <?php } ?>
+
+                        <input type="hidden" name="gid" value="<?php echo $res['gid']?>">
+                        <button type="submit" class="btn btn-default">Submit</button>
+                    </form>
+
+
+                </div>
+            </div>
+
+            <!--表单的结束-->
+
+        </div>
+    </div>
+</div>
+<!--12栅格结束-->
+
+</body>
+</html>
+<script src="../static/js/jquery-3.4.1.min.js"></script>
+<script>
+    //上传缩略图
+    $('input[id=exampleInputEmail6]').on('change', function () {
+        let file = this.files[0];
+
+        //前台预览功能
+        $('#gthumb').attr('src', URL.createObjectURL(file));
+
+        let formdata = new FormData();
+        formdata.append('file', file);
+        $.ajax({
+            url: 'upload.php',
+            type: 'POST',
+            data: formdata,
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                $('#gthumb').attr('src', res.src);//返回一个可以加入数据库的src
+                $('#gthumb').prevAll(" input")[0].value = res.src;  //把src插入到数据库中
+
+            }
+        })
+
+    });
+
+
+    // 更新轮播图照片
+    $('input[id=exampleInputEmail7]').on('change', function () {
+        let file = this.files;
+
+        $("img").remove();
+        for (let i = 0; i < file.length; i++) {
+            let formdata = new FormData();
+            formdata.append('file', file[i]);
+            $.ajax({
+                url: 'upload.php',
+                type: 'POST',
+                data: formdata,
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                success: function (res) {
+
+                    if (res.code === 200) {
+                        $('<img>').appendTo('#banner').attr('src', res.src).css({'height': 80, 'margin-right': 10});
+                        let bainput = $('input[name=banner]');
+                        bainput.val((index, value) => value + res.src + ',');
+
+
+                    } else {
+                        alert(res.msg)
+                    }
+
+                }
+            })
+        }
+    });
+
+
+    //表单 提交信息  在数据库添加信息
+    $('form').on('submit', function (e) {
+        e.preventDefault();
+
+        let formdata = new FormData(this);
+        formdata.set('banner', formdata.get('banner').slice(0, -1));  //截取返回的地址最后的那个逗号
+
+        $.ajax({
+            type: "POST",
+            url: "goodsUpdate.php",
+            data: formdata,
+            processData: false,
+            contentType: false,
+            dataType: "json",
+            success: function (res) {
+                if (res.code === 200) {
+                    alert(res.msg);
+                    $("form")[0].reset();
+
+                } else {
+                    alert(res.msg);
+                }
+            }
+        });
+
+    });
+</script>

@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>预约添加</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+</head>
+<body>
+<!--12栅格-->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 col-lg-offset-2">
+            <!--路径导航-->
+            <ol class="breadcrumb">
+                <li>首页</li>
+                <li class="active">预约添加</li>
+            </ol>
+
+
+            <!--表单的开始-->
+            <div class="panel panel-info" id="inputs">
+                <div class="panel-body">
+                    <form>
+                        <!--<div class="form-group">-->
+                            <!--<label for="exampleInputEmail11">预约服务</label>-->
+                            <!--<select class="form-control" name="cid" id="exampleInputEmail11">-->
+                                <!--<?php-->
+                               <!--foreach ($res as $value){-->
+                                <!--?>-->
+                                <!--<option value="<?php echo $value['id']; ?>"> <?php echo $value["cname"] ?> </option>-->
+
+                                <!--<?php-->
+                                <!--}-->
+                                <!--?>-->
+                            <!--</select>-->
+                        <!--</div>-->
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">预约服务</label>
+                            <input type="text" name="cname" class="form-control" id="exampleInputEmail1"
+                                   placeholder="预约服务">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail2">预约日期</label>
+                            <input type="date" name="odate" class="form-control" id="exampleInputEmail2"
+                                   placeholder="预约日期">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail3">您的姓名</label>
+                            <input type="text" name="oname" class="form-control" id="exampleInputEmail3"
+                                   placeholder="您的姓名">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail4">您的性别</label>
+                            <input type="text" name="osex" class="form-control" id="exampleInputEmail4"
+                                   placeholder="您的性别">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail5">您的电话</label>
+                            <input type="text" name="onumber" class="form-control" id="exampleInputEmail5"
+                                   placeholder="您的电话">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="exampleInputEmail6">补充说明</label>
+                            <textarea type="text" name="oadd" class="form-control" id="exampleInputEmail6"
+                                      placeholder="补充说明"></textarea>
+                        </div>
+
+
+                        <button type="submit" class="btn btn-default">Submit</button>
+                    </form>
+                </div>
+            </div>
+            <!--表单的结束-->
+
+        </div>
+    </div>
+</div>
+<!--12栅格结束-->
+
+</body>
+</html>
+<script src="../static/js/jquery-3.4.1.min.js"></script>
+<!--<script>-->
+    <!--//添加预约-->
+    <!--$('form').on('submit', function (e) {-->
+        <!--e.preventDefault();-->
+        <!--let input = $(this).serialize();-->
+
+        <!--$.ajax({-->
+            <!--type: "POST",-->
+            <!--url: "orderInsert.php",-->
+            <!--data: input,-->
+            <!--dataType: "json",-->
+            <!--context: this,-->
+            <!--success: function (res) {-->
+                <!--if (res.code === 200) {-->
+                    <!--alert(res.msg)-->
+
+                <!--} else {-->
+                    <!--alert(res.msg);-->
+                <!--}-->
+            <!--}-->
+        <!--});-->
+
+    <!--});-->
+<!--</script>-->

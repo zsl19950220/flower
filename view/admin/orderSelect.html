@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>预约展示</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+</head>
+<style>
+    table input {
+        border: none;
+        outline: none;
+    }
+</style>
+<body>
+<div class="">
+    <!--路径导航-->
+    <ol class="breadcrumb">
+        <li>首页</li>
+        <li class="active">预约展示</li>
+    </ol>
+
+    <!--表格的开始-->
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>预约服务</th>
+            <th>预约日期</th>
+            <th>姓名</th>
+            <th>性别</th>
+            <th>电话</th>
+            <th>补充说明</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+
+
+        <?php
+                foreach ($res as $key=>$value){
+        ?>
+        <tr id="<?php  echo $value['oid']?>">
+
+            <td><input type="text" name="cname" data-value="<?php  echo $value['cname']?>"
+                       value="<?php  echo $value['cname']?>"></td>
+
+            <td><input type="text" name="odate" data-value="<?php  echo $value['odate']?>"
+                       value="<?php  echo $value['odate']?>"></td>
+
+            <td><input type="text" name="oname" data-value="<?php  echo $value['oname']?>"
+                       value="<?php  echo $value['oname']?>"></td>
+
+            <td><input type="text" name="osex" data-value="<?php  echo $value['osex']?>"
+                       value="<?php  echo $value['osex']?>"></td>
+
+            <td><input type="text" name="onumber" data-value="<?php  echo $value['onumber']?>"
+                       value="<?php  echo $value['onumber']?>"></td>
+
+            <td><input type="text" name="oadd" data-value="<?php  echo $value['oadd']?>"
+                       value="<?php  echo $value['oadd']?>"></td>
+
+
+            <td>
+                <button class="btn btn-danger">删除</button>
+            </td>
+
+        </tr>
+
+
+        <?php
+                }
+                ?>
+
+
+        </tbody>
+    </table>
+
+
+</div>
+
+</body>
+</html>
+<script src="../static/js/jquery-3.4.1.min.js"></script>
+<script>
+    //修改
+    $('tbody').on('blur', 'input', function () {
+        let id = $(this).parents('tr').attr('id');
+        let value = this.value;
+        let type = this.name;
+        let oldvalue = this.getAttribute('data-value');
+        value.length && oldvalue != value && $.ajax({
+            type:'POST',
+            url:'orderUpdate.php',
+            dataType:'json',
+            context:this,
+            data:{id,value,type},
+            success:function (res) {
+                if(res.code == 200){
+                    alert(res.msg)
+                }else{
+                    alert(res.msg);
+                    this.value = oldvalue;
+                }
+            }
+        })
+
+    });
+
+    //删除
+    $('tbody').on('click', '.btn-danger', function () {
+        let qs = $(this).parents('tr').attr('id');
+
+        $.ajax({
+            type: 'POST',
+            url: 'orderDelete.php',
+            dataType: 'json',
+            data: {
+                'id': qs,
+            },
+            success: function (res) {
+                if (res.code === 200) {
+                    alert(res.msg);
+                    $('#' + qs).remove();//获取到tr，然后删除了
+                } else {
+                    alert(res.msg);
+                }
+
+            }
+        })
+    });
+
+</script>
